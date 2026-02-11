@@ -12,5 +12,14 @@
     </form>
 
     <h1>Videos</h1>
+
+    <%if(!user || !user.videos || user.videos.length === 0){%>
+      <h6>No videos are uploaded yet</h6>
+    <%}else{%>
+      <video controls width="300px">
+        <source src="<%= '/uploads/' + video.filename %>" type="video/mp4" />
+      </video>
+    <%}%>
+
   </body>
 </html>

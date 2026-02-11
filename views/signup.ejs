@@ -13,36 +13,40 @@
   </head>
   <body>
     <h1>Sign Up</h1>
-    <form method="post" action="signup">
+    <form method="post" action="/signup">
       <div class="form-group">
-        <label for="exampleInputEmail1">Enter your name</label>
+        <label for="nameInput">Enter your name</label>
         <input
+          name="name"
           type="text"
           class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-          placeholder="Enter email"
+          id="nameInput"
+          placeholder="Enter your name"
+          required
         />
+      </div>
+
       <div class="form-group">
-        <label for="exampleInputEmail1">Email address</label>
+        <label for="emailInput">Email address</label>
         <input
+          name="email"
           type="email"
           class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
+          id="emailInput"
           placeholder="Enter email"
+          required
         />
-        <small id="emailHelp" class="form-text text-muted"
-          >We'll never share your email with anyone else.</small
-        >
       </div>
+
       <div class="form-group">
-        <label for="exampleInputPassword1">Password</label>
+        <label for="passwordInput">Password</label>
         <input
+          name="password"
           type="password"
           class="form-control"
-          id="exampleInputPassword1"
+          id="passwordInput"
           placeholder="Password"
+          required
         />
       </div>
 

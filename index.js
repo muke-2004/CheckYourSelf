@@ -5,8 +5,13 @@ const app = express();
 const multer = require("multer");
 const mongoose = require("mongoose");
 const userdb = require("./models/userModel");
+const path = require("path");
+
 // ================== APP SETUP ==================
+
 app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -30,9 +35,42 @@ mongoose
   });
 
 // ================== ROUTES ==================
-// app.get("/login", login);
+app.get("/login", async (req, res) => {
+  res.render("login");
+});
+
+app.post("/login", async (req, res) => {
+  // console.log(req.body);
+  let user = userdb.findById({ email: req.body.email });
+
+  res.render("profile", { user });
+});
+
 app.get("/signup", (req, res) => {
-  res.render("signup");
+  res.redirect("login");
+});
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      res.send("One of your inputs are missing Try again");
+    }
+
+    let user = new userdb({
+      name,
+      email,
+      password,
+    });
+
+    await user.save();
+
+    return res.render("profile", { user });
+  } catch (err) {
+    console.log(`${err} has occured`);
+    return res.status(500).send("Error saving user");
+  }
 });
 
 app.get("/", (req, res) => {
@@ -50,13 +88,9 @@ app.get("/addnew", (req, res) => {
 });
 
 app.post("/addnew", upload.single("video"), (req, res) => {
-  console.log(req.file.filename);
-  // console.log(req.body);
-  // const user = new userdb({
+  // console.log(req.file);
 
-  // });
-
-  return res.render("profile");
+  return res.render("profile", { video: req.file });
 });
 
 const port = process.env.PORT || 5000;
