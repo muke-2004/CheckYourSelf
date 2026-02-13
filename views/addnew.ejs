@@ -7,6 +7,29 @@
   </head>
   <body>
     <form method="post" action="/addnew" enctype="multipart/form-data">
+      <label data-field>
+        Video:
+        <input type="text" placeholder="Curious About" name="about" />
+      </label>
+      <br /><br />
+      <label data-field>
+        Message:
+        <textarea
+          name="description"
+          placeholder="description"
+          rows="10"
+          cols="20"
+        >
+        </textarea>
+      </label>
+      <br />
+      <br />
+      <label data-field>
+        Date and time:
+        <input type="datetime-local" name="remindAt" />
+      </label>
+      <br />
+      <br />
       <input type="file" name="video" accept="video/*" required />
       <button type="submit">upload</button>
     </form>

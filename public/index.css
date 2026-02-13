@@ -1,0 +1,18 @@
+.video {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* max-width: 100%; */
+  /* grid-template-rows: auto auto auto auto; */
+
+  /* padding: 0 5px 0 5px; */
+}
+
+video {
+  /* margin: 0px 5px; */
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.card {
+  margin: 5px 5px;
+}

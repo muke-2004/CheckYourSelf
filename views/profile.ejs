@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile Page</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
   </head>
   <body>
     <h1>Profile Page</h1>
@@ -13,13 +15,45 @@
 
     <h1>Videos</h1>
 
+    
+        
     <%if(!user || !user.videos || user.videos.length === 0){%>
+
       <h6>No videos are uploaded yet</h6>
-    <%}else{%>
-      <video controls width="300px">
-        <source src="<%= '/uploads/' + video.filename %>" type="video/mp4" />
-      </video>
-    <%}%>
+    
+      <%}else{%>
+        <div class="video">
+          <% user.videos.forEach((video)=>{ %>
+
+              <article class="card">
+
+                <header>
+                  
+                  <h3><%=video.about%></h3>
+                  <p><%= video.description%></p>
+                </header>
+
+                <video controls width="300" height="300">
+                  <source src= "/uploads/<%= video.video %>" type="video/mp4" />
+                </video>
+
+                <footer class="flex gap-2 mt-4">
+                  <form action="/delete/<%=video._id%>?_method=DELETE" method="post">
+                    <button class="outline" >Delete</button>
+                  </form>
+
+                  <button>Lock</button>
+                </footer>
+
+              </article>
+            
+      
+          <% })  %>
+        </div>
+      <%}%>
+
+
 
   </body>
+  
 </html>
