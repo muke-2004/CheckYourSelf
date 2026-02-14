@@ -7,9 +7,15 @@ const videoSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    trim: true,
   },
-  remindAt: {
+  unlockAt: {
     type: Date,
+  },
+  status: {
+    type: String,
+    enum: ["locked", "released"],
+    default: "released",
   },
   video: {
     type: String,

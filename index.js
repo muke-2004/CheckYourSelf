@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const { restrictToLoggedInUserOnly } = require("./middleware/auth");
 const methodOverride = require("method-override");
 const bcrypt = require("bcrypt");
+const cron = require("node-cron");
 
 // ================== APP SETUP ==================
 
@@ -114,6 +115,10 @@ app.get("/", (req, res) => {
 
 app.get("/profile", restrictToLoggedInUserOnly, (req, res) => {
   // console.log(req.user.videos[0].about);
+  // cron.schedule("* * * * * *",
+  // });
+
+  // console.log(req.user.videos[0].remindAt);
   return res.render("profile", { user: req.user });
 });
 
@@ -130,7 +135,8 @@ app.post(
     req.user.videos.push({
       about: req.body.about,
       description: req.body.description,
-      remindAt: new Date(req.body.remindAt),
+      unlockAt: new Date(req.body.unlockAt.split("T")[0]),
+      status: "released",
       video: req.file.filename,
       userId: req.user._id,
     });
@@ -152,7 +158,38 @@ app.delete("/delete/:id", restrictToLoggedInUserOnly, async (req, res) => {
   return res.redirect("/profile");
 });
 
+app.patch("/lock/:id", restrictToLoggedInUserOnly, async (req, res) => {
+  await userdb.updateOne(
+    { "videos._id": req.params.id },
+    {
+      $set: {
+        "videos.$.status": locked,
+      },
+    },
+  );
+});
+
+cron.schedule("* * * * * * ", async () => {
+  const date = new Date();
+
+  await userdb.updateMany(
+    {
+      status: "locked",
+      unlockAt: { $gte: date },
+    },
+    {
+      $set: { status: "released" },
+    },
+  );
+});
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`server is running on http://localhost:5000`);
 });
+
+// let dates = new Date();
+// let date = new Date("2026-02-15T00:00:00.000Z");
+// console.log(dates);
+// console.log(date);
+// console.log(dates < date);

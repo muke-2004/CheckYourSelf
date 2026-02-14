@@ -25,7 +25,7 @@
         <div class="video">
           <% user.videos.forEach((video)=>{ %>
 
-              <article class="card">
+              <article class="card" id="card-<%= video._id%>" >
 
                 <header>
                   
@@ -42,12 +42,14 @@
                     <button class="outline" >Delete</button>
                   </form>
 
-                  <button>Lock</button>
+                  <form method="post" action="/update/<%=video._id%>">
+                    <button class="lockBtn"  data-id="<%=video._id%>" data-unlock="<%=video.remindAt%>" >Lock</button>
+                  </form>
+                  
                 </footer>
 
               </article>
-            
-      
+
           <% })  %>
         </div>
       <%}%>
@@ -55,5 +57,38 @@
 
 
   </body>
+
+  <script>
+  document.querySelectorAll(".lockBtn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+      const id = btn.dataset.id;
+      const unlockAt = btn.dataset.unlock;
+      const card = document.getElementById("card-" + id);
+
+      card.style.pointerEvents = "none";
+      card.style.opacity = "0.5";
+      card.style.pointer = "none";
+
+      const interval = setInterval(()=>{
+          const date = new Date();
+          
+          if(date >= new Date(unlockAt)){
+
+            card.style.pointerEvents = "auto";
+            card.style.opacity = "1";
+
+            clearInterval(interval);
+          }else{
+            console.log(`${date} is less than ${new Date(unlockAt)}`);
+          }
+
+          
+      },1000)
+    });
+  });
+
+</script>
   
 </html>
