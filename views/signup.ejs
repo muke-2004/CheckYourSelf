@@ -12,46 +12,56 @@
     />
   </head>
   <body>
-    <h1>Sign Up</h1>
-    <form method="post" action="/signup">
-      <div class="form-group">
-        <label for="nameInput">Enter your name</label>
-        <input
-          name="name"
-          type="text"
-          class="form-control"
-          id="nameInput"
-          placeholder="Enter your name"
-          required
-        />
-      </div>
+    <div
+      class="d-flex flex-column align-items-center justify-content-center"
+      style="height: 100vh"
+    >
+      <div class="card p-4 rounded shadow-sm" style="width: 400px">
+        <%- include("partials/nav") %>
+        <!-- <h1>Sign Up</h1> -->
+        <form method="post" action="/signup">
+          <div class="form-group">
+            <label for="nameInput">Enter your name</label>
+            <input
+              name="name"
+              type="text"
+              class="form-control shadow-sm"
+              id="nameInput"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="emailInput">Email address</label>
-        <input
-          name="email"
-          type="email"
-          class="form-control"
-          id="emailInput"
-          placeholder="Enter email"
-          required
-        />
-      </div>
+          <div class="form-group">
+            <label for="emailInput">Email address</label>
+            <input
+              name="email"
+              type="email"
+              class="form-control shadow-sm"
+              id="emailInput"
+              placeholder="Enter email"
+              required
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="passwordInput">Password</label>
-        <input
-          name="password"
-          type="password"
-          class="form-control"
-          id="passwordInput"
-          placeholder="Password"
-          required
-        />
-      </div>
+          <div class="form-group">
+            <label for="passwordInput">Password</label>
+            <input
+              name="password"
+              type="password"
+              class="form-control shadow-sm"
+              id="passwordInput"
+              placeholder="Password"
+              required
+            />
+          </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+          <button type="submit" class="btn btn-primary shadow-sm">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
   </body>
   <script
     src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

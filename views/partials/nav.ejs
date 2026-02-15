@@ -1,0 +1,42 @@
+
+<ul class="nav nav-tabs mb-2" >
+
+  <% if (locals.user) { %>
+
+
+    <li class="nav-item">
+        <a class="nav-link active" href="/profile">Profile</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/addnew">Add Video</a>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a
+        class="nav-link dropdown-toggle"
+        data-bs-toggle="dropdown"
+        href="#"
+        role="button"
+      >
+        <%= locals.user.name %>
+      </a>
+
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+      </ul>
+    </li>
+
+  <% } else { %>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/signup">Create Account</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/login">Login</a>
+    </li>
+
+  <% } %>
+
+</ul>

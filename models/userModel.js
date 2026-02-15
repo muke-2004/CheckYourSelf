@@ -1,31 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const videoSchema = new mongoose.Schema({
-  about: {
-    type: String,
-  },
-  description: {
-    type: String,
-    trim: true,
-  },
-  unlockAt: {
-    type: Date,
-  },
-  status: {
-    type: String,
-    enum: ["locked", "released"],
-    default: "released",
-  },
-  video: {
-    type: String,
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "userdb",
-  },
-});
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -44,7 +19,6 @@ const userSchema = new mongoose.Schema({
     trim: true,
     select: false,
   },
-  videos: [videoSchema],
 });
 
 userSchema.pre("save", async function () {

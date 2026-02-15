@@ -6,26 +6,33 @@
     <title>Profile Page</title>
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://unpkg.com/@knadh/oat/oat.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
   </head>
   <body>
     <h1>Profile Page</h1>
-    <form method="get" action="addnew">
-      <button class="btn">Add New</button>
-    </form>
+
+    <%- include("partials/nav") %>
+
+    <br>
+    <!-- <form method="get" action="addnew">
+      <button data-variant="secondary">Add New</button>
+    </form> -->
 
     <h1>Videos</h1>
 
     
         
-    <%if(!user || !user.videos || user.videos.length === 0){%>
+    <%if(!videos || videos.length === 0){%>
 
       <h6>No videos are uploaded yet</h6>
     
       <%}else{%>
         <div class="video">
-          <% user.videos.forEach((video)=>{ %>
-
-              <article class="card" id="card-<%= video._id%>" >
+          <% videos.forEach((video)=>{ %>
+            
+            
+            <%if(video.status === "locked" && date < video.unlockAt ){%>
+              <article class="card" id="card-<%= video._id%>" style="opacity:0.5; pointer-events:none;">
 
                 <header>
                   
@@ -33,62 +40,56 @@
                   <p><%= video.description%></p>
                 </header>
 
-                <video controls width="300" height="300">
-                  <source src= "/uploads/<%= video.video %>" type="video/mp4" />
+                <p>🔒 Locked until 
+                  <%= video.unlockAt.toLocaleString("en-IN") %>
+                </p>
+
+             <div >
+                <video width="300" height="300">
+                  <source src="/uploads/<%= video.video %>" type="video/mp4" />
                 </video>
+              </div>
 
-                <footer class="flex gap-2 mt-4">
-                  <form action="/delete/<%=video._id%>?_method=DELETE" method="post">
-                    <button class="outline" >Delete</button>
-                  </form>
+            <%} else{%>
 
-                  <form method="post" action="/update/<%=video._id%>">
-                    <button class="lockBtn"  data-id="<%=video._id%>" data-unlock="<%=video.remindAt%>" >Lock</button>
-                  </form>
-                  
-                </footer>
+            
+            <article class="card" id="card-<%= video._id%>" >
 
-              </article>
+              <header>
+                <% if(date > video.unlockAt){%>
+                  <div role="alert" data-variant="warning">
+                    <strong>Warning!</strong> - The reminder time has already completed.
+                  </div>
+                <%}%>
+                
+                <h3><%=video.about%></h3>
+                <p><%= video.description%></p>
+              </header>
+
+              <video controls width="300" height="300">
+                <source src="/uploads/<%= video.video %>" type="video/mp4" />
+              </video>
+            <%}%>
+
+              <footer class="flex gap-2 mt-4">
+                
+                <form action="/delete/<%=video._id%>?_method=DELETE" method="post">
+                  <button class="outline" >Delete</button>
+                </form>
+
+                <form method="post" action="/lock/<%=video._id%>?_method=PATCH">
+                  <button class="lockBtn"  data-id="<%=video._id%>" data-unlock="<%=video.unlockAt%>" data-status="<%=video.status%>" >Lock</button>
+                </form>
+
+              </footer>
+
+            </article>
 
           <% })  %>
         </div>
       <%}%>
 
-
-
-  </body>
-
-  <script>
-  document.querySelectorAll(".lockBtn").forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-      const id = btn.dataset.id;
-      const unlockAt = btn.dataset.unlock;
-      const card = document.getElementById("card-" + id);
-
-      card.style.pointerEvents = "none";
-      card.style.opacity = "0.5";
-      card.style.pointer = "none";
-
-      const interval = setInterval(()=>{
-          const date = new Date();
-          
-          if(date >= new Date(unlockAt)){
-
-            card.style.pointerEvents = "auto";
-            card.style.opacity = "1";
-
-            clearInterval(interval);
-          }else{
-            console.log(`${date} is less than ${new Date(unlockAt)}`);
-          }
-
-          
-      },1000)
-    });
-  });
-
-</script>
-  
+      </body>
+      <script src="https://unpkg.com/@knadh/oat/oat.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </html>

@@ -1,5 +1,5 @@
 const { validateTokenForUser } = require("../auth");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const userdb = require("../models/userModel");
 
 async function restrictToLoggedInUserOnly(req, res, next) {
