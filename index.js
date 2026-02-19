@@ -231,48 +231,53 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/public/:id", (req, res) => {
+app.get("/public/:id", restrictToLoggedInUserOnly, (req, res) => {
   return res.render("public", { id: req.params.id });
 });
 
-app.post("/public/:id", upload.single("video"), async (req, res) => {
-  const updatedVideo = await videosdb.findOneAndUpdate(
-    { _id: req.params.id },
-    { $set: { videoAfter: req.file.filename } },
-    { new: true },
-  );
-  // console.log(updatedVideo);
+app.post(
+  "/public/:id",
+  restrictToLoggedInUserOnly,
+  upload.single("video"),
+  async (req, res) => {
+    const updatedVideo = await videosdb.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { videoAfter: req.file.filename } },
+      { new: true },
+    );
+    // console.log(updatedVideo);
 
-  const video = new publicVideodb({
-    oldVideo: updatedVideo.video,
-    newVideo: updatedVideo.videoAfter,
-  });
+    const video = new publicVideodb({
+      oldVideo: updatedVideo.video,
+      newVideo: updatedVideo.videoAfter,
+    });
 
-  await video.save();
+    await video.save();
 
-  const updated = await videosdb.findOneAndUpdate(
-    { _id: req.params.id },
-    { $set: { posted: true } },
-    { returnDocument: "after" },
-  );
+    const updated = await videosdb.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { posted: true } },
+      { returnDocument: "after" },
+    );
 
-  // console.log(updated.posted);
+    // console.log(updated.posted);
 
-  io.emit("videoFromServer", video);
+    io.emit("videoFromServer", video);
 
-  // console.log(video.oldVideo);
-  // console.log(video.newVideo);
+    // console.log(video.oldVideo);
+    // console.log(video.newVideo);
 
-  return res.redirect("/profile");
-});
+    return res.redirect("/profile");
+  },
+);
 
-app.get("/publicchat", async (req, res) => {
+app.get("/publicchat", restrictToLoggedInUserOnly, async (req, res) => {
   // const posts = await publicVideodb.find().sort({ createdAt: -1 });
   // res.json(posts);
   return res.render("publicchat");
 });
 
-app.get("/api/public-feed", async (req, res) => {
+app.get("/api/public-feed", restrictToLoggedInUserOnly, async (req, res) => {
   const posts = await publicVideodb.find().sort({ createdAt: -1 });
   res.json(posts);
 });
