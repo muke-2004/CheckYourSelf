@@ -81,6 +81,22 @@
                   <button class="lockBtn"  data-id="<%=video._id%>" data-unlock="<%=video.unlockAt%>" data-status="<%=video.status%>" >Lock</button>
                 </form>
 
+                <% if(Date.now()  > video.unlockAt ){ %>
+
+                  <% if(video.posted === true){%>
+
+                  <form method="get" action="/public/<%=video._id%>">
+                    <button class="publicBtn"  data-id="<%=video._id%>" disabled>Public</button>
+                  </form>
+
+                  <%}else{%>
+                    <form method="get" action="/public/<%=video._id%>">
+                      <button class="publicBtn"  data-id="<%=video._id%>">Public</button>
+                    </form>
+                  <%}%>
+
+                <%}%>
+
               </footer>
 
             </article>

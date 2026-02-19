@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Public</title>
+  </head>
+  <body>
+    <form method="post" action="/public/<%=id %>" enctype="multipart/form-data">
+      <label data-field>
+        Video:
+        <input type="text" placeholder="Curious About" name="about" />
+      </label>
+
+      <br /><br />
+
+      <input type="file" name="video" accept="video/*" required />
+      <button type="submit" id="postBtn">Post</button>
+    </form>
+  </body>
+</html>

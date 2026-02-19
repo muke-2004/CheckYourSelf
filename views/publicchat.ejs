@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Public Chat</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-light">
+    <div class="container mt-4">
+      <h2 class="mb-4 text-center">Public Video Feed</h2>
+
+      <div id="video" class="d-flex flex-column align-items-center gap-2"></div>
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      const socket = io();
+
+      socket.on("connect", (video) => {
+        console.log("Connected:", socket.id);
+      });
+
+      const renderVideo = (video) => {
+        const videoDiv = document.getElementById("video");
+
+        // Card
+        const wrapper = document.createElement("div");
+        wrapper.className = "card shadow-sm p-3";
+        wrapper.style.width = "700px";
+        wrapper.style.borderRadius = "15px";
+
+        // Row container
+        const row = document.createElement("div");
+        row.className = "row g-3";
+
+        // Old video column
+        if (video.oldVideo) {
+          const col1 = document.createElement("div");
+          col1.className = "col-md-6";
+
+          const originalVideo = document.createElement("video");
+          originalVideo.src = `/uploads/${video.oldVideo}`;
+          originalVideo.controls = true;
+          originalVideo.className = "w-100 rounded";
+          originalVideo.style.maxHeight = "350px";
+          originalVideo.style.objectFit = "cover";
+
+          col1.appendChild(originalVideo);
+          row.appendChild(col1);
+        }
+
+        // New video column
+        if (video.newVideo) {
+          const col2 = document.createElement("div");
+          col2.className = "col-md-6";
+
+          const updatedVideo = document.createElement("video");
+          updatedVideo.src = `/uploads/${video.newVideo}`;
+          updatedVideo.controls = true;
+          updatedVideo.className = "w-100 rounded";
+          updatedVideo.style.maxHeight = "350px";
+          updatedVideo.style.objectFit = "cover";
+
+          col2.appendChild(updatedVideo);
+          row.appendChild(col2);
+        }
+
+        wrapper.appendChild(row);
+        videoDiv.append(wrapper);
+      };
+
+      // Fetch existing posts
+      fetch("/api/public-feed")
+        .then((res) => res.json())
+        .then((posts) => {
+          posts.forEach(renderVideo);
+        });
+
+      // Real-time new posts
+      socket.on("videoFromServer", (video) => {
+        renderVideo(video);
+      });
+    </script>
+  </body>
+</html>

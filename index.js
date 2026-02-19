@@ -1,7 +1,11 @@
 require("dotenv").config();
 
+const http = require("http");
 const express = require("express");
+const { Server } = require("socket.io");
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const multer = require("multer");
 const mongoose = require("mongoose");
 const userdb = require("./models/userModel");
@@ -14,6 +18,7 @@ const methodOverride = require("method-override");
 const bcrypt = require("bcrypt");
 const cron = require("node-cron");
 const { checkForAuthenticationCookie } = require("./middleware/authentication");
+const { publicVideodb } = require("./models/publicVideoModel");
 
 // ================== APP SETUP ==================
 
@@ -45,6 +50,15 @@ mongoose
   .catch((error) => {
     console.log(`${error}`);
   });
+
+// ================== SOCKET.IO ==================
+io.on("connection", (socket) => {
+  console.log("new User");
+  // socket.on("videoSent", (video) => {
+  //   console.log("A new video", video);
+  //   io.emit("videoFromServer", video);
+  // });
+});
 
 // ================== ROUTES ==================
 app.get("/login", async (req, res) => {
@@ -164,7 +178,7 @@ app.post(
     // console.log(req.user);
 
     await video.save();
-    return res.redirect("profile");
+    return res.redirect("/profile");
   },
 );
 
@@ -194,6 +208,52 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+app.get("/public/:id", (req, res) => {
+  return res.render("public", { id: req.params.id });
+});
+
+app.post("/public/:id", upload.single("video"), async (req, res) => {
+  const updatedVideo = await videosdb.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: { videoAfter: req.file.filename } },
+    { new: true },
+  );
+  // console.log(updatedVideo);
+
+  const video = new publicVideodb({
+    oldVideo: updatedVideo.video,
+    newVideo: updatedVideo.videoAfter,
+  });
+
+  await video.save();
+
+  const updated = await videosdb.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: { posted: true } },
+    { returnDocument: "after" },
+  );
+
+  console.log(updated.posted);
+
+  io.emit("videoFromServer", video);
+
+  // console.log(video.oldVideo);
+  // console.log(video.newVideo);
+
+  return res.redirect("/publicchat");
+});
+
+app.get("/publicchat", async (req, res) => {
+  // const posts = await publicVideodb.find().sort({ createdAt: -1 });
+  // res.json(posts);
+  return res.render("publicchat");
+});
+
+app.get("/api/public-feed", async (req, res) => {
+  const posts = await publicVideodb.find().sort({ createdAt: -1 });
+  res.json(posts);
+});
+
 cron.schedule("*/30 * * * * * ", async () => {
   const date = new Date();
 
@@ -209,13 +269,6 @@ cron.schedule("*/30 * * * * * ", async () => {
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`server is running on http://localhost:5000`);
 });
-
-// let dates = new Date();
-// let date = new Date("2026-02-15T07:14:00.000Z");
-
-// console.log(dates > date);
-// console.log(dates < date);
-// console.log(dates == date);

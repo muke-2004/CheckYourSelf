@@ -19,9 +19,16 @@ const videoSchema = new mongoose.Schema({
   video: {
     type: String,
   },
+  videoAfter: {
+    type: String,
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "userdb",
+  },
+  posted: {
+    type: Boolean,
+    default: false,
   },
 });
 
