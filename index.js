@@ -19,6 +19,7 @@ const bcrypt = require("bcrypt");
 const cron = require("node-cron");
 const { checkForAuthenticationCookie } = require("./middleware/authentication");
 const { publicVideodb } = require("./models/publicVideoModel");
+const fs = require("fs");
 
 // ================== APP SETUP ==================
 
@@ -183,9 +184,31 @@ app.post(
 );
 
 app.delete("/delete/:id", restrictToLoggedInUserOnly, async (req, res) => {
-  await videosdb.findByIdAndDelete({ _id: req.params.id });
-  // console.log(deletedVideo);
-  return res.redirect("/profile");
+  try {
+    // 1️⃣ Find the video first
+    // const video = await videosdb.findById(req.params.id);
+
+    // if (!video) {
+    //   return res.redirect("/profile");
+    // }
+
+    // // 2️⃣ Delete the file if it exists
+    // const filePath = path.join(__dirname, "uploads", video.video);
+
+    // fs.unlink(filePath, (err) => {
+    //   if (err && err.code !== "ENOENT") {
+    //     console.log("Error deleting file:", err);
+    //   }
+    // });
+
+    // 3️⃣ Delete from database
+    await videosdb.findByIdAndDelete(req.params.id);
+
+    res.redirect("/profile");
+  } catch (err) {
+    console.log("Error deleting video:", err);
+    res.redirect("/profile");
+  }
 });
 
 app.patch("/lock/:id", restrictToLoggedInUserOnly, async (req, res) => {
@@ -233,14 +256,14 @@ app.post("/public/:id", upload.single("video"), async (req, res) => {
     { returnDocument: "after" },
   );
 
-  console.log(updated.posted);
+  // console.log(updated.posted);
 
   io.emit("videoFromServer", video);
 
   // console.log(video.oldVideo);
   // console.log(video.newVideo);
 
-  return res.redirect("/publicchat");
+  return res.redirect("/profile");
 });
 
 app.get("/publicchat", async (req, res) => {
